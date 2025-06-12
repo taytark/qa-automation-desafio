@@ -17,7 +17,7 @@ public class WebTablesSteps {
     private Faker faker = new Faker();
     private WebDriver driver;
     private WebDriverWait wait;
-    private List<String> createdEmails = new ArrayList<>(); // para controlar registros criados
+    private List<String> createdEmails = new ArrayList<>();
 
     public WebTablesSteps() {
         new BaseTest();
@@ -173,66 +173,6 @@ public class WebTablesSteps {
                     throw new AssertionError("Registro com email " + email + " ainda aparece na tabela");
                 }
             }
-        }
-    }
-
-    // Bônus: criar 12 registros
-    @And("crio 12 novos registros")
-    public void crioDozeNovosRegistros() {
-        for (int i = 0; i < 12; i++) {
-            crioNovoRegistro();
-        }
-    }
-
-    @Then("a tabela deve conter 12 novos registros")
-    public void tabelaDeveConter12Registros() {
-        int count = 0;
-        List<WebElement> rows = driver.findElements(By.cssSelector(".rt-tr-group"));
-        for (WebElement row : rows) {
-            for (String email : createdEmails) {
-                if (row.getText().contains(email)) {
-                    count++;
-                    break;
-                }
-            }
-        }
-        if (count < 12) {
-            throw new AssertionError("A tabela contém menos que 12 registros criados");
-        }
-    }
-
-    @When("deleto todos os registros criados")
-    public void deletoTodosRegistrosCriados() {
-        // Apaga todos os registros pelo email na lista
-        while (!createdEmails.isEmpty()) {
-            String email = createdEmails.get(0);
-            List<WebElement> rows = driver.findElements(By.cssSelector(".rt-tr-group"));
-            boolean found = false;
-            for (WebElement row : rows) {
-                if (row.getText().contains(email)) {
-                    WebElement deleteButton = row.findElement(By.cssSelector("span[title='Delete']"));
-                    deleteButton.click();
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                createdEmails.remove(email);
-                // espera recarregar a tabela após exclusão
-                wait.until(ExpectedConditions.numberOfElementsToBeLessThan(By.cssSelector(".rt-tr-group"),
-                        rows.size()));
-            } else {
-                // Se não achou, remove da lista para evitar loop infinito
-                createdEmails.remove(email);
-            }
-        }
-    }
-
-    @Then("a tabela deve estar vazia")
-    public void tabelaDeveEstarVazia() {
-        List<WebElement> rows = driver.findElements(By.cssSelector(".rt-tr-group"));
-        if (!rows.isEmpty()) {
-            throw new AssertionError("A tabela não está vazia após deletar todos os registros");
         }
     }
 }

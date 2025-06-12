@@ -1,7 +1,9 @@
-base\BaseTest.class
 steps\CommonSteps.class
 runners\TestRunner.class
 utils\FakerUtils.class
 steps\ProgressBarSteps.class
-hooks\Hooks.class
 steps\WebTablesSteps.class
+base\BaseTest.class
+steps\BrowserWindowsSteps.class
+hooks\Hooks.class
+steps\PracticeForm.class

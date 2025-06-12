@@ -39,6 +39,8 @@ public class BrowserWindowsSteps {
 
     @And("clico no botão New Window")
     public void clicoNoBotaoNewWindow() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("document.querySelectorAll('iframe').forEach(el => el.style.display='none');");
         WebElement newWindowButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("windowButton")));
         newWindowButton.click();
     }

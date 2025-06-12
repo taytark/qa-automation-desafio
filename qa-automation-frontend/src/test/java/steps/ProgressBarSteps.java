@@ -47,50 +47,56 @@ public class ProgressBarSteps {
     public void paroAntesDe25() throws InterruptedException {
         ((JavascriptExecutor) driver).executeScript(
                 "var banner = document.getElementById('fixedban'); if (banner) { banner.remove(); }");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement progressBar = wait
-                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[role='progressbar']")));
 
-        String progressText = progressBar.getText();
+        WebElement progressBar = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[role='progressbar']")));
+
         int progress = 0;
+        int maxTentativas = 100;
+        int tentativa = 0;
 
-        if (!progressText.isEmpty()) {
+        while (tentativa < maxTentativas) {
+            String progressText = progressBar.getText().replace("%", "").trim();
+
             try {
-                progress = Integer.parseInt(progressText.replace("%", "").trim());
+                if (!progressText.isEmpty()) {
+                    progress = Integer.parseInt(progressText);
+                    System.out.println("Progress atual: " + progress + "%");
+                }
             } catch (NumberFormatException e) {
                 System.out.println("Erro ao converter progresso: " + progressText);
             }
-        }
 
-        if (progress < 25) {
-            WebElement stopButton = driver.findElement(By.id("startStopButton"));
-            stopButton.click();
-            System.out.println("Parando a barra em " + progress + "%");
+            if (progress >= 20) {
+                WebElement stopButton = driver.findElement(By.id("startStopButton"));
+                stopButton.click();
+                System.out.println("Parando a barra em " + progress + "%");
+                Thread.sleep(200);
+                break;
+            }
 
-            // Delay apenas para fins visuais (evitar em produção)
-            Thread.sleep(5000);
-        } else {
-            System.out.println("Progresso já passou de 25%: " + progress + "%");
+            Thread.sleep(50);
+            tentativa++;
         }
     }
 
     @Then("o valor da progress Bar deve ser menor ou igual a 25%")
     public void validarProgressMenorOuIgual25() {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(
-                "let ad = document.getElementById('google_ads_iframe_/21849154601,22343295815/Ad.Plus-Anchor_0'); if(ad) ad.remove();");
+        ((JavascriptExecutor) driver).executeScript(
+                "var banner = document.getElementById('fixedban'); if (banner) { banner.remove(); }");
 
         String progressText = driver.findElement(By.cssSelector("div[role='progressbar']")).getText();
         int progress = Integer.parseInt(progressText.replace("%", "").trim());
 
-        // Tolerância de até 26% por conta do timing da barra
-        if (progress > 26) {
+        if (progress > 25) {
             throw new AssertionError("Valor da progress bar é maior que 25%: " + progress);
         }
     }
 
     @When("aperto Start novamente")
     public void apertoStartNovamente() {
+        ((JavascriptExecutor) driver).executeScript(
+                "var banner = document.getElementById('fixedban'); if (banner) { banner.remove(); }");
         WebElement startButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("startStopButton")));
         startButton.click();
     }
@@ -103,10 +109,11 @@ public class ProgressBarSteps {
 
     @Then("clico no botão Reset para limpar a progress bar")
     public void clicoBotaoReset() {
+        ((JavascriptExecutor) driver).executeScript(
+                "var banner = document.getElementById('fixedban'); if (banner) { banner.remove(); }");
         WebElement resetButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("resetButton")));
         resetButton.click();
 
-        // Verificar se barra voltou para 0%
         String progressText = driver.findElement(By.cssSelector("div[role='progressbar']")).getText();
         if (!progressText.equals("0%")) {
             throw new AssertionError("Progress bar não foi resetada corretamente: valor atual = " + progressText);
