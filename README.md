@@ -109,6 +109,9 @@ qaautomation_api/
 - Java 8 (para UI) e Java 17 (para API) instalados  
 - Maven instalado  
 - Navegador Google Chrome instalado (para os testes de UI)
+- Git Bash
+  - Após a instalação, clone o repositório com o comando:
+    ```git clone https://github.com/taytark/qa-automation-desafio.git```
 
 ---
 
